@@ -29,6 +29,9 @@ from kivy.properties import ObjectProperty
 
 from kivy.uix.dropdown import DropDown
 
+from kivy.uix.scrollview import ScrollView
+
+
 kivy.config.Config.set('graphics', 'resizable', False)
 
 class LoginScreen(Screen):
@@ -86,7 +89,7 @@ class LoginScreen(Screen):
         username = self.username_input.text
         password = self.password_input.text
         #print(username," ",password)
-        if username == "username" and password == "password":
+        if username == "" and password == "":
             self.error_label.text = ""
             self.manager.current = "chat"
         else:
@@ -201,7 +204,7 @@ class ChatScreen(Screen):
                             pos=lambda s, v: setattr(self.center_frame_rect, 'pos', v))
         
         # Create the search bar and the drop-down list
-        self.search_bar = TextInput(hint_text="Search", size_hint=(0.5, 0.4), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        self.search_bar = TextInput(hint_text="Find Friends...", size_hint=(0.5, 0.4), pos_hint={'center_x': 0.5, 'center_y': 0.5})
         self.center_frame.add_widget(self.search_bar)
         
                 
@@ -225,15 +228,51 @@ class ChatScreen(Screen):
             self.bottom_frame_left_rect = Rectangle(size=self.bottom_frame_left.size, pos=self.bottom_frame_left.pos)
         self.bottom_frame_left.bind(size=lambda s, v: setattr(self.bottom_frame_left_rect, 'size', v),
                                     pos=lambda s, v: setattr(self.bottom_frame_left_rect, 'pos', v))
-        self.search_label = Label(text="Search:", font_size="18sp")
-        self.search_bar = TextInput(hint_text="Type here...", font_size="16sp")
-        self.search_button = Button(text="Search", font_size="16sp")
+        self.search_label = Label(text="Conversations:", font_size="18sp", size_hint=(1, 0.5/8))
+        self.search_bar = TextInput(hint_text="Type here...", font_size="16sp", size_hint=(1, 0.4/8))
+        self.search_button = Button(text="Search", font_size="16sp", size_hint=(1, 0.25/8))
         self.bottom_frame_left.add_widget(self.search_label)
         self.bottom_frame_left.add_widget(self.search_bar)
         self.bottom_frame_left.add_widget(self.search_button)
 
+
+        # Add a new frame below the search button
+        self.bottom_frame_left_bottom = BoxLayout(size_hint=(1, 5/8))
+        with self.bottom_frame_left_bottom.canvas.before:
+            Color(1, 0, 1, 1)
+            self.bottom_frame_left_bottom_rect = Rectangle(size=self.bottom_frame_left_bottom.size, pos=self.bottom_frame_left_bottom.pos)
+        self.bottom_frame_left_bottom.bind(size=lambda s, v: setattr(self.bottom_frame_left_bottom_rect, 'size', v),
+                                           pos=lambda s, v: setattr(self.bottom_frame_left_bottom_rect, 'pos', v))
+        self.bottom_frame_left.add_widget(self.bottom_frame_left_bottom)
+
+        # Create a scrollable container to hold a list of objects
+        self.scroll_container = ScrollView()
+        self.list_container = BoxLayout(orientation="vertical", spacing=10, size_hint_y=None)
+        self.list_container.bind(minimum_height=self.list_container.setter('height'))
+        self.scroll_container.add_widget(self.list_container)
         
-        self.bottom_frame_right = BoxLayout(size_hint=(3/4, 1))
+        # Add some objects to the list container
+        for i in range(50):
+            label = Label(text=f"Object {i+1}", size_hint=(1, None), height=35)
+            self.list_container.add_widget(label)
+
+        # Add the scrollable container to the bottom frame left bottom layout
+        self.bottom_frame_left_bottom.add_widget(self.scroll_container)
+
+
+        # Add a new frame below the scrollable frame
+        self.bottom_frame_left_bottom_bottom = BoxLayout(size_hint=(1, 0.5/8))
+        with self.bottom_frame_left_bottom_bottom.canvas.before:
+            Color(1, 0, 0, 1)
+            self.bottom_frame_left_bottom_bottom_rect = Rectangle(size=self.bottom_frame_left_bottom_bottom.size, pos=self.bottom_frame_left_bottom_bottom.pos)
+        self.bottom_frame_left_bottom_bottom.bind(size=lambda s, v: setattr(self.bottom_frame_left_bottom_bottom_rect, 'size', v),
+                                           pos=lambda s, v: setattr(self.bottom_frame_left_bottom_bottom_rect, 'pos', v))
+        self.bottom_frame_left.add_widget(self.bottom_frame_left_bottom_bottom)
+
+
+
+        
+        self.bottom_frame_right = BoxLayout(orientation="vertical", size_hint=(3/4, 1))
         with self.bottom_frame_right.canvas.before:
             Color(1, 0.5, 0, 1)
             self.bottom_frame_right_rect = Rectangle(size=self.bottom_frame_right.size, pos=self.bottom_frame_right.pos)
@@ -243,6 +282,31 @@ class ChatScreen(Screen):
         self.bottom_frame.add_widget(self.bottom_frame_left)
         self.bottom_frame.add_widget(self.bottom_frame_right)
         self.layout.add_widget(self.bottom_frame)
+
+        
+        # Add frames to bottom_frame_right
+        self.bottom_frame_right_top = BoxLayout(size_hint=(1, 0.7/8))
+        with self.bottom_frame_right_top.canvas.before:
+            Color(0.5, 0.5, 0.5, 1)
+            self.bottom_frame_right_top_rect = Rectangle(size=self.bottom_frame_right_top.size, pos=self.bottom_frame_right_top.pos)
+        self.bottom_frame_right_top.bind(size=lambda s, v: setattr(self.bottom_frame_right_top_rect, 'size', v),
+                                         pos=lambda s, v: setattr(self.bottom_frame_right_top_rect, 'pos', v))
+
+        self.bottom_frame_right_middle = BoxLayout(size_hint=(1, 7/8))
+        self.bottom_frame_right_middle_scrollview = ScrollView(do_scroll_x=False)
+        self.bottom_frame_right_middle_scrollview.add_widget(self.bottom_frame_right_middle)
+
+        self.bottom_frame_right_bottom = BoxLayout(size_hint=(1, 0.7/8))
+        with self.bottom_frame_right_bottom.canvas.before:
+            Color(0.5, 0.5, 0.5, 1)
+            self.bottom_frame_right_bottom_rect = Rectangle(size=self.bottom_frame_right_bottom.size, pos=self.bottom_frame_right_bottom.pos)
+        self.bottom_frame_right_bottom.bind(size=lambda s, v: setattr(self.bottom_frame_right_bottom_rect, 'size', v),
+                                            pos=lambda s, v: setattr(self.bottom_frame_right_bottom_rect, 'pos', v))
+
+        self.bottom_frame_right.add_widget(self.bottom_frame_right_top)
+        self.bottom_frame_right.add_widget(self.bottom_frame_right_middle_scrollview)
+        self.bottom_frame_right.add_widget(self.bottom_frame_right_bottom)
+
 
         # Add the main layout to the screen
         self.add_widget(self.layout)
