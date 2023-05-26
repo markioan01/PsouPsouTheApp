@@ -5,6 +5,7 @@ from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.popup import Popup
 
 
 from kivy.app import App
@@ -209,6 +210,7 @@ class ChatScreen(Screen):
         
                 
         self.search_button = Button(text="Search", size_hint=(0.2, 0.4), pos_hint={'center_y': 0.5})
+        self.search_button.bind(on_release=self.search_friend_button_clicked)
         self.center_frame.add_widget(self.search_button)
         self.button1 = Button(text="Button 1", size_hint=(0.1, 0.4), pos_hint={'center_y': 0.5})
         self.center_frame.add_widget(self.button1)
@@ -315,7 +317,23 @@ class ChatScreen(Screen):
     def logout(self, instance):
         self.manager.current = "login"
 
+    def search_friend_button_clicked(self, instance):
+        popup_content = BoxLayout(orientation='horizontal')
 
+        # Left yellow frame with an image
+        left_frame = BoxLayout(orientation='vertical', size_hint=(1/3, 1))
+        left_frame.add_widget(Image(source='path_to_image.png'))
+
+        # Right red frame with text and button
+        right_frame = BoxLayout(orientation='vertical', size_hint=(2/3, 1))
+        right_frame.add_widget(Label(text='Some text on top', size_hint=(1, 0.8)))
+        right_frame.add_widget(Button(text='Send Friend Request', size_hint=(1, 0.2)))
+
+        popup_content.add_widget(left_frame)
+        popup_content.add_widget(right_frame)
+
+        popup = Popup(title='Search Account', content=popup_content, size_hint=(0.8, 0.4))
+        popup.open()
 
 
 class MyChatApp(App):

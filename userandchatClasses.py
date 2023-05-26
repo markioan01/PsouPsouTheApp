@@ -1,3 +1,5 @@
+from datetime import datetime
+
 class UserProfile:
     def __init__(self, username, password, email, profile_picture=None):
         self.username = username
@@ -60,8 +62,8 @@ class Chat:
         self.user2 = user2
         self.messages = []
 
-    def add_message(self, sender, message):
-        self.messages.append((sender, message))
+    def add_message(self, message):
+        self.messages.append(message)
 
     def __str__(self):
         return f"Chat between {self.user1.username} and {self.user2.username}, Messages: {len(self.messages)}"
@@ -74,3 +76,29 @@ class Chat:
 
     def getMessages():
         return self.messages
+
+
+class Message:
+    def __init__(self, sender, receiver, content):
+        self.sender = sender
+        self.receiver = receiver
+        self.content = content
+        current_datetime = datetime.now()
+        self.date = current_datetime.strftime("%Y-%m-%d")
+        self.time = current_datetime.strftime("%H:%M:%S")
+
+    def get_sender(self):
+        return self.sender
+
+    def get_receiver(self):
+        return self.receiver
+
+    def get_content(self):
+        return self.content
+
+    def get_date(self):
+        return self.date
+
+    def get_time(self):
+        return self.time
+
